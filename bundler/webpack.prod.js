@@ -1,0 +1,17 @@
+const { merge } = require('webpack-merge')
+const commonConfiguration = require('./webpack.common.js')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = merge(
+    commonConfiguration,
+    {
+        output: {
+            publicPath: 'https://noko966.github.io/card.github.io/'
+        },
+        mode: 'production',
+        plugins:
+        [
+            new CleanWebpackPlugin()
+        ]
+    }
+)
