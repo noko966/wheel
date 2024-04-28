@@ -130,7 +130,7 @@ renderer.toneMapping = THREE.ReinhardToneMapping;
 
 const params = {
   threshold: 0.1,
-  strength: 0.8,
+  strength: 0.2,
   radius: 0,
   exposure: 1,
 };
@@ -177,6 +177,13 @@ const animateParts = (parts, rotationSpeeds, deltaTime) => {
 
 sectorsGroup.position.set(0, -1.1, 0);
 
+
+// Animation parameters
+let currentSpeed = 0.2; // initial rotation speed in radians
+const deceleration = 0.001; // deceleration rate
+const stopAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]; // possible stop angles in radians
+let targetAngle = stopAngles[Math.floor(Math.random() * stopAngles.length)]; // pick a random stop angle
+
 /**
  * Animate
  */
@@ -187,9 +194,22 @@ const tick = () => {
   const deltaTime = clock.getDelta();
 
   // Rotate the whole wheel
-  sectors.forEach((sector) => {
-    sector.rotation.y += 0.01;
-  });
+//   sectors.forEach((sector) => {
+//     sector.rotation.y += 0.01;
+//   });
+if (currentSpeed > 0) {
+    sectorsGroup.rotation.y += currentSpeed;
+    currentSpeed -= deceleration;
+    currentSpeed = Math.max(currentSpeed, 0); // prevent negative speed
+  }
+
+  // Check if we are close to the target angle and can stop
+  if (currentSpeed < 0.005 && Math.abs(sectorsGroup.rotation.y % (2 * Math.PI) - targetAngle) < 0.05) {
+    currentSpeed = 0; // stop the wheel
+    wheel.rotation.y = targetAngle; // snap to the exact angle
+  }
+//   sectorsGroup.rotation.y += 0.01;
+
 
   if (parts.length > 0) {
     animateParts(parts, rotationSpeeds, deltaTime);
